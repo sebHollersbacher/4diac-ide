@@ -72,7 +72,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 		return list;
 	}
 
-	private RoundedRectangle selectionFeedback;
+	private IFigure selectionFeedback;
 
 	@Override
 	public void showTargetFeedback(final Request request) {
@@ -87,7 +87,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 		}
 	}
 
-	private boolean isFeedbackRequest(final Request request) {
+	protected boolean isFeedbackRequest(final Request request) {
 		return (REQ_SELECTION.equals(request.getType()))
 				|| (REQ_SELECTION_HOVER.equals(request.getType()) || isValidConnectionRequest(request));
 	}
@@ -98,7 +98,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 						|| REQ_CONNECTION_END.equals(request.getType()));
 	}
 
-	protected RoundedRectangle createSelectionFeedbackFigure() {
+	protected IFigure createSelectionFeedbackFigure() {
 		return createSelectionFeedbackFigure(getHost(), arc);
 	}
 
