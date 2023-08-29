@@ -16,9 +16,13 @@
  *******************************************************************************/
 package org.eclipse.fordiac.ide.application.editparts;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.fordiac.ide.application.Messages;
 import org.eclipse.fordiac.ide.application.figures.FBNetworkElementFigure;
+import org.eclipse.fordiac.ide.gef.widgets.IContextButtonProvider;
 import org.eclipse.fordiac.ide.model.libraryElement.CFBInstance;
 import org.eclipse.fordiac.ide.model.libraryElement.FB;
 import org.eclipse.fordiac.ide.model.ui.actions.OpenListenerManager;
@@ -29,7 +33,6 @@ import org.eclipse.gef.RequestConstants;
  * This class implements an EditPart for a FunctionBlock.
  */
 public class FBEditPart extends AbstractFBNElementEditPart {
-
 	/**
 	 * Creates the figure (for the specified model) to be used as this parts
 	 * visuals.
@@ -60,6 +63,38 @@ public class FBEditPart extends AbstractFBNElementEditPart {
 		} else {
 			super.performRequest(request);
 		}
+	}
+
+	@Override
+	public <T> T getAdapter(final Class<T> key) {
+		if (key == IContextButtonProvider.class) {
+			return key.cast(new IContextButtonProvider() {
+				@Override
+				public List<String> topCommandIDs() {
+					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoom100", "org.eclipse.fordiac.ide.gef.zoom100",
+							"org.eclipse.fordiac.ide.gef.zoom100");
+				}
+
+				@Override
+				public List<String> rightCommandIDs() {
+					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoomfitpage",
+							"org.eclipse.fordiac.ide.gef.zoomfitpage", "org.eclipse.fordiac.ide.gef.zoomfitpage",
+							"org.eclipse.fordiac.ide.gef.zoomfitpage");
+				}
+
+				@Override
+				public List<String> leftCommandIDs() {
+					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoom100");
+				}
+
+				@Override
+				public List<String> bottomCommandIDs() {
+					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoomfitpage");
+				}
+			});
+		}
+
+		return super.getAdapter(key);
 	}
 
 }

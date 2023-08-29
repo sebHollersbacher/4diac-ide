@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.fordiac.ide.application.policies;
 
+import java.util.List;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseMotionListener;
@@ -22,6 +24,7 @@ import org.eclipse.fordiac.ide.gef.policies.ModifiedNonResizeableEditPolicy;
 import org.eclipse.fordiac.ide.gef.widgets.ContextButton;
 import org.eclipse.fordiac.ide.gef.widgets.ContextButtonContainer;
 import org.eclipse.fordiac.ide.gef.widgets.ContextButtonContainer.Pos;
+import org.eclipse.fordiac.ide.gef.widgets.IContextButtonProvider;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 
@@ -38,17 +41,10 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 
 	@Override
 	protected IFigure createSelectionFeedbackFigure() {
-
-//		TODO Provider
-//		IContextButtonProvider provider = getHost().getAdapter(IContextButtonProvider.class);
-//		List<String> commands = provider.getCommandIds();
-//		IContextButtonProvider.POS pos = provider.getPos(commandid);
-//		int maxButtonSize = provider.getMaxButtonSize();
-
-		topContainer = createContainer(Pos.Top);
-		rightContainer = createContainer(Pos.Right);
-		bottomContainer = createContainer(Pos.Bottom);
-		leftContainer = createContainer(Pos.Left);
+		final IContextButtonProvider provider = getHost().getAdapter(IContextButtonProvider.class);
+		if (provider != null) {
+			createContextButtonMenu(provider);
+		}
 
 		final RoundedRectangle figure = (RoundedRectangle) super.createSelectionFeedbackFigure();
 		figure.setFill(false);
@@ -57,17 +53,50 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		return figure;
 	}
 
+	private void createContextButtonMenu(final IContextButtonProvider provider) {
+		// top
+		List<String> commands = provider.topCommandIDs();
+		if (!commands.isEmpty()) {
+			topContainer = createContainer(Pos.Top);
+			for (final String cmd : commands) {
+				topContainer.addButton(new ContextButton(cmd));
+			}
+		}
+
+		// right
+		commands = provider.rightCommandIDs();
+		if (!commands.isEmpty()) {
+			rightContainer = createContainer(Pos.Right);
+			for (final String cmd : commands) {
+				rightContainer.addButton(new ContextButton(cmd));
+			}
+		}
+
+		// bottom
+		commands = provider.bottomCommandIDs();
+		if (!commands.isEmpty()) {
+			bottomContainer = createContainer(Pos.Bottom);
+			for (final String cmd : commands) {
+				bottomContainer.addButton(new ContextButton(cmd));
+			}
+		}
+
+		// left
+		commands = provider.leftCommandIDs();
+		if (!commands.isEmpty()) {
+			leftContainer = createContainer(Pos.Left);
+			for (final String cmd : commands) {
+				leftContainer.addButton(new ContextButton(cmd));
+			}
+		}
+	}
+
 	private ContextButtonContainer createContainer(final Pos position) {
 		final ContextButtonContainer container = new ContextButtonContainer(getHostFigure().getBounds(), position,
 				maxButtonSize);
 		container.setFill(false);
 		container.setOutline(true);
 
-		for (int i = 0; i < 3; i++) {
-			final ContextButton button = new ContextButton();
-			container.addButton(button);
-			container.add(button);
-		}
 		container.addMouseMotionListener(new MouseMotionListener.Stub() {
 			@Override
 			public void mouseExited(final MouseEvent me) {
@@ -100,20 +129,20 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		}
 
 		hoverFigure = createSelectionFeedbackFigure();
-		if (null != hoverFigure) {
+		if (hoverFigure != null) {
 			getLayer(LayerConstants.FEEDBACK_LAYER).add(hoverFigure);
 		}
 
-		if (null != topContainer) {
+		if (topContainer != null) {
 			getLayer(LayerConstants.HANDLE_LAYER).add(topContainer);
 		}
-		if (null != rightContainer) {
+		if (rightContainer != null) {
 			getLayer(LayerConstants.HANDLE_LAYER).add(rightContainer);
 		}
-		if (null != bottomContainer) {
+		if (bottomContainer != null) {
 			getLayer(LayerConstants.HANDLE_LAYER).add(bottomContainer);
 		}
-		if (null != leftContainer) {
+		if (leftContainer != null) {
 			getLayer(LayerConstants.HANDLE_LAYER).add(leftContainer);
 		}
 	}

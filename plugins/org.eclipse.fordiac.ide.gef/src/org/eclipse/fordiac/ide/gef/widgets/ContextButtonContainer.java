@@ -81,6 +81,8 @@ public class ContextButtonContainer extends Shape {
 	}
 
 	public void addButton(final ContextButton button) {
+		this.add(button);
+
 		switch (position) {
 		case Top -> addTopButton(button);
 		case Right -> addRightButton(button);
@@ -93,7 +95,7 @@ public class ContextButtonContainer extends Shape {
 	private void addTopButton(final ContextButton button) {
 		final Rectangle containerBounds = getBounds();
 		button.setBounds(new Rectangle(
-				containerBounds.x() + containerBounds.width() - 2 * buttonSize - CONTAINER_BUTTON_MARGIN
+				containerBounds.x() + containerBounds.width() - buttonSize - CONTAINER_BUTTON_MARGIN
 						- buttons.size() * (PADDING + buttonSize),
 				containerBounds.y() + CONTAINER_BUTTON_MARGIN, buttonSize, buttonSize));
 		this.buttons.add(button);
@@ -101,28 +103,28 @@ public class ContextButtonContainer extends Shape {
 
 	private void addRightButton(final ContextButton button) {
 		final Rectangle containerBounds = getBounds();
-		button.setBounds(new Rectangle(
-				containerBounds.x() + containerBounds.width() - buttonSize - CONTAINER_BUTTON_MARGIN,
-				containerBounds.y() + buttonSize + CONTAINER_BUTTON_MARGIN + buttons.size() * (PADDING + buttonSize),
-				buttonSize, buttonSize));
+		button.setBounds(
+				new Rectangle(containerBounds.x() + containerBounds.width() - buttonSize - CONTAINER_BUTTON_MARGIN,
+						containerBounds.y() + CONTAINER_BUTTON_MARGIN + buttons.size() * (PADDING + buttonSize),
+						buttonSize, buttonSize));
 		this.buttons.add(button);
 	}
 
 	private void addBottomButton(final ContextButton button) {
 		final Rectangle containerBounds = getBounds();
-		button.setBounds(new Rectangle(
-				containerBounds.x() + containerBounds.width() - 2 * buttonSize - CONTAINER_BUTTON_MARGIN
-						- buttons.size() * (PADDING + buttonSize),
-				containerBounds.y() + containerBounds.height() - buttonSize - CONTAINER_BUTTON_MARGIN, buttonSize,
-				buttonSize));
+		button.setBounds(
+				new Rectangle(containerBounds.x() + CONTAINER_BUTTON_MARGIN + buttons.size() * (PADDING + buttonSize),
+						containerBounds.y() + containerBounds.height() - buttonSize - CONTAINER_BUTTON_MARGIN,
+						buttonSize, buttonSize));
 		this.buttons.add(button);
 	}
 
 	private void addLeftButton(final ContextButton button) {
 		final Rectangle containerBounds = getBounds();
-		button.setBounds(new Rectangle(containerBounds.x() + CONTAINER_BUTTON_MARGIN,
-				containerBounds.y() + CONTAINER_BUTTON_MARGIN + buttons.size() * (PADDING + buttonSize), buttonSize,
-				buttonSize));
+		button.setBounds(new Rectangle(
+				containerBounds.x() + CONTAINER_BUTTON_MARGIN, containerBounds.y() + containerBounds.height()
+						- buttonSize - CONTAINER_BUTTON_MARGIN - buttons.size() * (PADDING + buttonSize),
+				buttonSize, buttonSize));
 		this.buttons.add(button);
 	}
 }

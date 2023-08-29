@@ -19,22 +19,27 @@ import org.eclipse.draw2d.Clickable;
 import org.eclipse.draw2d.Label;
 import org.eclipse.fordiac.ide.ui.imageprovider.FordiacImage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandImageService;
 import org.eclipse.ui.handlers.IHandlerService;
 
 public class ContextButton extends Clickable implements ActionListener {
 
-	private final String command = "org.eclipse.fordiac.ide.gef.zoom100";
+	private final String command;
+	final IHandlerService handlerService;
+	final ICommandImageService imageService;
 
-	public ContextButton() {
+	public ContextButton(final String command) {
 		super(new Label(FordiacImage.ICON_DELETE_RESOURCE.getImage()), STYLE_BUTTON);
+
+		handlerService = PlatformUI.getWorkbench().getService(IHandlerService.class);
+		imageService = PlatformUI.getWorkbench().getService(ICommandImageService.class);
+		this.command = command;
+
 		addActionListener(this);
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent event) {
-		final IHandlerService handlerService = PlatformUI.getWorkbench().getService(IHandlerService.class);
-//		final ICommandImageService imageService = PlatformUI.getWorkbench().getService(ICommandImageService.class);
-
 		try {
 			handlerService.executeCommand(command, null);
 		} catch (final Exception ex) {
