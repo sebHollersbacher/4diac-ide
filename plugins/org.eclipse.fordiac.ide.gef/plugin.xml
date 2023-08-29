@@ -76,7 +76,16 @@
             id="org.eclipse.fordiac.ide.gef.zoomfitpage"
             name="Zoom fit Page">
       </command>
-	</extension>  
+	</extension>
+	<extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="org.eclipse.fordiac.ide.gef.zoom100"
+            icon="fordiacimage://ICON_ZOOM_100"/>
+      <image
+            commandId="org.eclipse.fordiac.ide.gef.zoomfitpage"
+            icon="fordiacimage://ICON_ZOOM_PAGE"/>
+	</extension> 
 	<extension
     		point="org.eclipse.ui.handlers">
     	<handler class="org.eclipse.fordiac.ide.gef.handlers.ZoomInHandler"
@@ -170,13 +179,11 @@
 	            </command>
 				<command
 	            		commandId="org.eclipse.fordiac.ide.gef.zoom100"
-	                  	icon="fordiacimage://ICON_ZOOM_100"
 	                  	id="org.eclipse.fordiac.ide.toolbars.zoomToolbar"
 	                  	tooltip="Set zoom level to 100%">
 	            </command>
 				<command
 	            		commandId="org.eclipse.fordiac.ide.gef.zoomfitpage"
-	                  	icon="fordiacimage://ICON_ZOOM_PAGE"
 	                  	id="org.eclipse.fordiac.ide.toolbars.zoomToolbar"
 	                  	tooltip="Set zoom level to fit the page">
 	            </command>

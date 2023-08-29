@@ -18,6 +18,7 @@ import org.eclipse.draw2d.ActionListener;
 import org.eclipse.draw2d.Clickable;
 import org.eclipse.draw2d.Label;
 import org.eclipse.fordiac.ide.ui.imageprovider.FordiacImage;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandImageService;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -29,11 +30,15 @@ public class ContextButton extends Clickable implements ActionListener {
 	final ICommandImageService imageService;
 
 	public ContextButton(final String command) {
-		super(new Label(FordiacImage.ICON_DELETE_RESOURCE.getImage()), STYLE_BUTTON);
+		super(new Label(FordiacImage.MISSING.getImage()), STYLE_BUTTON);
 
-		handlerService = PlatformUI.getWorkbench().getService(IHandlerService.class);
 		imageService = PlatformUI.getWorkbench().getService(ICommandImageService.class);
+		handlerService = PlatformUI.getWorkbench().getService(IHandlerService.class);
 		this.command = command;
+		final ImageDescriptor imgDescriptor = imageService.getImageDescriptor(command);
+		if (imgDescriptor != null) {
+			setContents(new Label(imgDescriptor.createImage()));
+		}
 
 		addActionListener(this);
 	}
@@ -43,7 +48,7 @@ public class ContextButton extends Clickable implements ActionListener {
 		try {
 			handlerService.executeCommand(command, null);
 		} catch (final Exception ex) {
-			throw new RuntimeException("Command not found");
+			// invalid command
 		}
 	}
 }

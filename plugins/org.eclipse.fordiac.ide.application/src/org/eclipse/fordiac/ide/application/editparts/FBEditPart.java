@@ -84,7 +84,7 @@ public class FBEditPart extends AbstractFBNElementEditPart {
 
 				@Override
 				public List<String> leftCommandIDs() {
-					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoom100");
+					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoom100", "invalid");
 				}
 
 				@Override
