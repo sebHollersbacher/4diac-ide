@@ -74,10 +74,9 @@ public class ContextButtonContainer extends Shape {
 	 */
 	@Override
 	protected void outlineShape(final Graphics graphics) {
-		setLineWidth(2 * ModifiedMoveHandle.SELECTION_BORDER_WIDTH);
 		setAlpha(ModifiedMoveHandle.SELECTION_FILL_ALPHA);
-		setForegroundColor(ModifiedMoveHandle.getSelectionColor());
-		graphics.drawRectangle(getBounds().getCopy().shrink(2, 2));
+		setBackgroundColor(ModifiedMoveHandle.getSelectionColor());
+		graphics.fillRectangle(getBounds().getCopy().shrink(2, 2));
 	}
 
 	public void addButton(final ContextButton button) {

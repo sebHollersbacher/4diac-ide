@@ -108,7 +108,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 			newSelFeedbackFigure.setAlpha(ModifiedMoveHandle.SELECTION_FILL_ALPHA);
 			newSelFeedbackFigure.setOutline(false);
 			newSelFeedbackFigure.setBounds(getSelectableFigureBounds(ep));
-			newSelFeedbackFigure.setCornerDimensions(new Dimension(arc, arc));
+			newSelFeedbackFigure.setCornerDimensions(new Dimension(0, 0));
 			newSelFeedbackFigure.setForegroundColor(ModifiedMoveHandle.getSelectionColor());
 			newSelFeedbackFigure.setBackgroundColor(ModifiedMoveHandle.getSelectionColor());
 			return newSelFeedbackFigure;
