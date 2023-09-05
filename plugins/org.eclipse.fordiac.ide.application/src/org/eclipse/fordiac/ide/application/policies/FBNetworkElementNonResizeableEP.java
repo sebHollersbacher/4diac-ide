@@ -33,8 +33,6 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 	private ContextButtonContainer bottomContainer;
 	private ContextButtonContainer leftContainer;
 
-	private IContextButtonProvider provider;
-
 	private static final int MAX_BUTTON_SIZE = 21;
 
 	@Override
@@ -74,49 +72,31 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 	}
 
 	private void createContextButtonMenu(final IContextButtonProvider provider) {
-		// top
-		List<String> commands = provider.topCommandIDs();
-		if (!commands.isEmpty()) {
-			topContainer = createContainer(Pos.Top);
-			for (final String cmd : commands) {
-				topContainer.addButton(new ContextButton(cmd));
-			}
-		}
-
-		// right
-		commands = provider.rightCommandIDs();
-		if (!commands.isEmpty()) {
-			rightContainer = createContainer(Pos.Right);
-			for (final String cmd : commands) {
-				rightContainer.addButton(new ContextButton(cmd));
-			}
-		}
-
-		// bottom
-		commands = provider.bottomCommandIDs();
-		if (!commands.isEmpty()) {
-			bottomContainer = createContainer(Pos.Bottom);
-			for (final String cmd : commands) {
-				bottomContainer.addButton(new ContextButton(cmd));
-			}
-		}
-
-		// left
-		commands = provider.leftCommandIDs();
-		if (!commands.isEmpty()) {
-			leftContainer = createContainer(Pos.Left);
-			for (final String cmd : commands) {
-				leftContainer.addButton(new ContextButton(cmd));
-			}
-		}
+		createContainer(provider.topCommandIDs(), Pos.Top);
+		createContainer(provider.rightCommandIDs(), Pos.Right);
+		createContainer(provider.bottomCommandIDs(), Pos.Bottom);
+		createContainer(provider.leftCommandIDs(), Pos.Left);
 	}
 
-	private ContextButtonContainer createContainer(final Pos position) {
-		final ContextButtonContainer container = new ContextButtonContainer(getHostFigure().getBounds(), position,
-				MAX_BUTTON_SIZE);
-		container.setFill(false);
-		container.setOutline(true);
+	private void createContainer(final List<String> commands, final Pos position) {
+		if (!commands.isEmpty()) {
+			final ContextButtonContainer container = new ContextButtonContainer(getHostFigure().getBounds(), position,
+					MAX_BUTTON_SIZE);
+			for (final String cmd : commands) {
+				container.addButton(new ContextButton(cmd));
+			}
 
-		return container;
+			container.updateBounds(getHostFigure().getBounds());
+			container.setFill(false);
+			container.setOutline(true);
+
+			switch (position) {
+			case Top -> topContainer = container;
+			case Right -> rightContainer = container;
+			case Bottom -> bottomContainer = container;
+			case Left -> leftContainer = container;
+			default -> throw new IllegalArgumentException();
+			}
+		}
 	}
 }
