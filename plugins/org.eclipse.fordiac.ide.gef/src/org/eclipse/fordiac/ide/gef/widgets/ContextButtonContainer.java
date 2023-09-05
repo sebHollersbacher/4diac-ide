@@ -46,15 +46,15 @@ public class ContextButtonContainer extends Shape {
 	private void initContainer(final Rectangle editPartBounds) {
 		switch (position) {
 		case Top -> setBounds(new Rectangle(editPartBounds.x() - CONTAINER_BUTTON_MARGIN,
-				editPartBounds.y() - buttonSize - 2 * CONTAINER_BUTTON_MARGIN,
+				editPartBounds.y() - buttonSize - 3 * CONTAINER_BUTTON_MARGIN,
 				editPartBounds.width() + 2 * CONTAINER_BUTTON_MARGIN, buttonSize + 2 * CONTAINER_BUTTON_MARGIN));
-		case Right -> setBounds(new Rectangle(editPartBounds.x() + editPartBounds.width(),
+		case Right -> setBounds(new Rectangle(editPartBounds.x() + editPartBounds.width() + CONTAINER_BUTTON_MARGIN,
 				editPartBounds.y() - CONTAINER_BUTTON_MARGIN, buttonSize + 2 * CONTAINER_BUTTON_MARGIN,
 				editPartBounds.height() + 2 * CONTAINER_BUTTON_MARGIN));
 		case Bottom -> setBounds(new Rectangle(editPartBounds.x() - CONTAINER_BUTTON_MARGIN,
-				editPartBounds.y() + editPartBounds.height(), editPartBounds.width() + 2 * CONTAINER_BUTTON_MARGIN,
-				buttonSize + 2 * CONTAINER_BUTTON_MARGIN));
-		case Left -> setBounds(new Rectangle(editPartBounds.x() - buttonSize - 2 * CONTAINER_BUTTON_MARGIN,
+				editPartBounds.y() + editPartBounds.height() + CONTAINER_BUTTON_MARGIN,
+				editPartBounds.width() + 2 * CONTAINER_BUTTON_MARGIN, buttonSize + 2 * CONTAINER_BUTTON_MARGIN));
+		case Left -> setBounds(new Rectangle(editPartBounds.x() - buttonSize - 3 * CONTAINER_BUTTON_MARGIN,
 				editPartBounds.y() - CONTAINER_BUTTON_MARGIN, buttonSize + 2 * CONTAINER_BUTTON_MARGIN,
 				editPartBounds.height() + 2 * CONTAINER_BUTTON_MARGIN));
 		default -> throw new IllegalArgumentException();
@@ -75,8 +75,9 @@ public class ContextButtonContainer extends Shape {
 	@Override
 	protected void outlineShape(final Graphics graphics) {
 		setAlpha(ModifiedMoveHandle.SELECTION_FILL_ALPHA);
-		setBackgroundColor(ModifiedMoveHandle.getSelectionColor());
-		graphics.fillRectangle(getBounds().getCopy().shrink(2, 2));
+		setForegroundColor(ModifiedMoveHandle.getSelectionColor());
+		graphics.setLineWidth(ModifiedMoveHandle.SELECTION_BORDER_WIDTH);
+		graphics.drawRoundRectangle(getBounds().getCopy().shrink(2, 2), 4, 4);
 	}
 
 	public void addButton(final ContextButton button) {

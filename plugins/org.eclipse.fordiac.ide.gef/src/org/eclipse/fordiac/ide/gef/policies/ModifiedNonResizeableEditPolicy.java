@@ -37,9 +37,9 @@ import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
  */
 public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 
-	private int arc = DiagramPreferences.CORNER_DIM;
+	protected int arc = DiagramPreferences.CORNER_DIM;
 
-	private Insets insets = new Insets(2);
+	protected Insets insets = new Insets(2);
 
 	/**
 	 * Constructor.
@@ -72,7 +72,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 		return list;
 	}
 
-	private IFigure selectionFeedback;
+	private RoundedRectangle selectionFeedback;
 
 	@Override
 	public void showTargetFeedback(final Request request) {
@@ -87,7 +87,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 		}
 	}
 
-	protected boolean isFeedbackRequest(final Request request) {
+	private boolean isFeedbackRequest(final Request request) {
 		return (REQ_SELECTION.equals(request.getType()))
 				|| (REQ_SELECTION_HOVER.equals(request.getType()) || isValidConnectionRequest(request));
 	}
@@ -98,7 +98,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 						|| REQ_CONNECTION_END.equals(request.getType()));
 	}
 
-	protected IFigure createSelectionFeedbackFigure() {
+	protected RoundedRectangle createSelectionFeedbackFigure() {
 		return createSelectionFeedbackFigure(getHost(), arc);
 	}
 
@@ -108,7 +108,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 			newSelFeedbackFigure.setAlpha(ModifiedMoveHandle.SELECTION_FILL_ALPHA);
 			newSelFeedbackFigure.setOutline(false);
 			newSelFeedbackFigure.setBounds(getSelectableFigureBounds(ep));
-			newSelFeedbackFigure.setCornerDimensions(new Dimension(0, 0));
+			newSelFeedbackFigure.setCornerDimensions(new Dimension(arc, arc));
 			newSelFeedbackFigure.setForegroundColor(ModifiedMoveHandle.getSelectionColor());
 			newSelFeedbackFigure.setBackgroundColor(ModifiedMoveHandle.getSelectionColor());
 			return newSelFeedbackFigure;
@@ -126,7 +126,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 		removeSelectionFeedbackFigure();
 	}
 
-	private void removeSelectionFeedbackFigure() {
+	protected void removeSelectionFeedbackFigure() {
 		if (selectionFeedback != null) {
 			removeFeedback(selectionFeedback);
 			selectionFeedback = null;
