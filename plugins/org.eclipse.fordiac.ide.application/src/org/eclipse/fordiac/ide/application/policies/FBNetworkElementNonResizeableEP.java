@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedMoveHandle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedNonResizeableEditPolicy;
 import org.eclipse.fordiac.ide.gef.widgets.ContextButton;
@@ -25,6 +26,7 @@ import org.eclipse.fordiac.ide.gef.widgets.ContextButtonContainer;
 import org.eclipse.fordiac.ide.gef.widgets.ContextButtonContainer.Pos;
 import org.eclipse.fordiac.ide.gef.widgets.IContextButtonProvider;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
 
 public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPolicy {
 
@@ -98,5 +100,31 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 			default -> throw new IllegalArgumentException();
 			}
 		}
+	}
+
+	@Override
+	protected IFigure createDragSourceFeedbackFigure() {
+		topContainer.setVisible(false);
+		rightContainer.setVisible(false);
+		bottomContainer.setVisible(false);
+		leftContainer.setVisible(false);
+
+		return super.createDragSourceFeedbackFigure();
+	}
+
+	@Override
+	protected void eraseChangeBoundsFeedback(final ChangeBoundsRequest request) {
+		final Rectangle dragFigureBounds = getDragSourceFeedbackFigure().getBounds();
+
+		topContainer.setVisible(true);
+		topContainer.updateBounds(dragFigureBounds);
+		rightContainer.setVisible(true);
+		rightContainer.updateBounds(dragFigureBounds);
+		bottomContainer.setVisible(true);
+		bottomContainer.updateBounds(dragFigureBounds);
+		leftContainer.setVisible(true);
+		leftContainer.updateBounds(dragFigureBounds);
+
+		super.eraseChangeBoundsFeedback(request);
 	}
 }
