@@ -15,6 +15,7 @@ package org.eclipse.fordiac.ide.application.policies;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RoundedRectangle;
@@ -35,25 +36,12 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 	private ContextButtonContainer bottomContainer;
 	private ContextButtonContainer leftContainer;
 
-	private static final int MAX_BUTTON_SIZE = 21;
-
 	@Override
 	protected List<? extends IFigure> createSelectionHandles() {
 		final List<IFigure> list = new ArrayList<>();
 		list.add(new ModifiedMoveHandle((GraphicalEditPart) getHost(), insets, arc));
 
-		if (topContainer != null) {
-			list.add(topContainer);
-		}
-		if (rightContainer != null) {
-			list.add(rightContainer);
-		}
-		if (bottomContainer != null) {
-			list.add(bottomContainer);
-		}
-		if (leftContainer != null) {
-			list.add(leftContainer);
-		}
+		performContainerAction((container, l) -> l.add(container), list);
 
 		removeSelectionFeedbackFigure();
 		return list;
@@ -82,8 +70,7 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 
 	private void createContainer(final List<String> commands, final Pos position) {
 		if (!commands.isEmpty()) {
-			final ContextButtonContainer container = new ContextButtonContainer(getHostFigure().getBounds(), position,
-					MAX_BUTTON_SIZE);
+			final ContextButtonContainer container = new ContextButtonContainer(getHostFigure().getBounds(), position);
 			for (final String cmd : commands) {
 				container.addButton(new ContextButton(cmd));
 			}
@@ -104,11 +91,7 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 
 	@Override
 	protected IFigure createDragSourceFeedbackFigure() {
-		topContainer.setVisible(false);
-		rightContainer.setVisible(false);
-		bottomContainer.setVisible(false);
-		leftContainer.setVisible(false);
-
+		performContainerAction(ContextButtonContainer::setVisible, Boolean.FALSE);
 		return super.createDragSourceFeedbackFigure();
 	}
 
@@ -116,15 +99,24 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 	protected void eraseChangeBoundsFeedback(final ChangeBoundsRequest request) {
 		final Rectangle dragFigureBounds = getDragSourceFeedbackFigure().getBounds();
 
-		topContainer.setVisible(true);
-		topContainer.updateBounds(dragFigureBounds);
-		rightContainer.setVisible(true);
-		rightContainer.updateBounds(dragFigureBounds);
-		bottomContainer.setVisible(true);
-		bottomContainer.updateBounds(dragFigureBounds);
-		leftContainer.setVisible(true);
-		leftContainer.updateBounds(dragFigureBounds);
+		performContainerAction(ContextButtonContainer::setVisible, Boolean.TRUE);
+		performContainerAction(ContextButtonContainer::updateBounds, dragFigureBounds);
 
 		super.eraseChangeBoundsFeedback(request);
+	}
+
+	private <T> void performContainerAction(final BiConsumer<ContextButtonContainer, T> function, final T value) {
+		if (topContainer != null) {
+			function.accept(topContainer, value);
+		}
+		if (rightContainer != null) {
+			function.accept(rightContainer, value);
+		}
+		if (bottomContainer != null) {
+			function.accept(bottomContainer, value);
+		}
+		if (leftContainer != null) {
+			function.accept(leftContainer, value);
+		}
 	}
 }

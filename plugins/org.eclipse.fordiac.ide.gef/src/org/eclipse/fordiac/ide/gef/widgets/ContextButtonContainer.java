@@ -27,41 +27,40 @@ public class ContextButtonContainer extends Shape {
 		Top, Bottom, Left, Right
 	}
 
+	private static final int BUTTON_SIZE = 21;
 	private static final int CONTAINER_BUTTON_MARGIN = 5;
 	private final Pos position;
-	private final int buttonSize;
 
 	private final List<ContextButton> buttons = new ArrayList<>();
 
 	/**
 	 * Constructs a round cornered rectangle.
 	 */
-	public ContextButtonContainer(final Rectangle editPartBounds, final Pos position, final int buttonSize) {
+	public ContextButtonContainer(final Rectangle editPartBounds, final Pos position) {
 		this.position = position;
-		this.buttonSize = buttonSize;
 		initContainer(editPartBounds);
 	}
 
 	private void initContainer(final Rectangle editPartBounds) {
 		switch (position) {
 		case Top -> setBounds(new Rectangle(editPartBounds.x() - CONTAINER_BUTTON_MARGIN,
-				editPartBounds.y() - buttonSize - 3 * CONTAINER_BUTTON_MARGIN,
-				editPartBounds.width() + 2 * CONTAINER_BUTTON_MARGIN, buttonSize + 2 * CONTAINER_BUTTON_MARGIN));
+				editPartBounds.y() - BUTTON_SIZE - 3 * CONTAINER_BUTTON_MARGIN,
+				editPartBounds.width() + 2 * CONTAINER_BUTTON_MARGIN, BUTTON_SIZE + 2 * CONTAINER_BUTTON_MARGIN));
 		case Right -> setBounds(new Rectangle(editPartBounds.x() + editPartBounds.width() + CONTAINER_BUTTON_MARGIN,
-				editPartBounds.y() - CONTAINER_BUTTON_MARGIN, this.buttonSize + 2 * CONTAINER_BUTTON_MARGIN,
+				editPartBounds.y() - CONTAINER_BUTTON_MARGIN, BUTTON_SIZE + 2 * CONTAINER_BUTTON_MARGIN,
 				editPartBounds.height() + 2 * CONTAINER_BUTTON_MARGIN));
 		case Bottom -> setBounds(new Rectangle(editPartBounds.x() - CONTAINER_BUTTON_MARGIN,
 				editPartBounds.y() + editPartBounds.height() + CONTAINER_BUTTON_MARGIN,
-				editPartBounds.width() + 2 * CONTAINER_BUTTON_MARGIN, this.buttonSize + 2 * CONTAINER_BUTTON_MARGIN));
-		case Left -> setBounds(new Rectangle(editPartBounds.x() - this.buttonSize - 3 * CONTAINER_BUTTON_MARGIN,
-				editPartBounds.y() - CONTAINER_BUTTON_MARGIN, this.buttonSize + 2 * CONTAINER_BUTTON_MARGIN,
+				editPartBounds.width() + 2 * CONTAINER_BUTTON_MARGIN, BUTTON_SIZE + 2 * CONTAINER_BUTTON_MARGIN));
+		case Left -> setBounds(new Rectangle(editPartBounds.x() - BUTTON_SIZE - 3 * CONTAINER_BUTTON_MARGIN,
+				editPartBounds.y() - CONTAINER_BUTTON_MARGIN, BUTTON_SIZE + 2 * CONTAINER_BUTTON_MARGIN,
 				editPartBounds.height() + 2 * CONTAINER_BUTTON_MARGIN));
 		default -> throw new IllegalArgumentException();
 		}
 	}
 
 	public void updateBounds(final Rectangle editPartBounds) {
-		final int buttonSize = this.buttonSize + 2 * CONTAINER_BUTTON_MARGIN;
+		final int buttonSize = BUTTON_SIZE + 2 * CONTAINER_BUTTON_MARGIN;
 		switch (position) {
 		case Top -> setBounds(new Rectangle(
 				editPartBounds.x() + 2 * CONTAINER_BUTTON_MARGIN + editPartBounds.width() - buttons.size() * buttonSize,
@@ -105,16 +104,16 @@ public class ContextButtonContainer extends Shape {
 		case Top, Bottom -> {
 			button.setBounds(new Rectangle(
 					containerBounds.x() + CONTAINER_BUTTON_MARGIN
-							+ buttons.size() * (2 * CONTAINER_BUTTON_MARGIN + buttonSize),
-					containerBounds.y() + CONTAINER_BUTTON_MARGIN, buttonSize, buttonSize));
+							+ buttons.size() * (2 * CONTAINER_BUTTON_MARGIN + BUTTON_SIZE),
+					containerBounds.y() + CONTAINER_BUTTON_MARGIN, BUTTON_SIZE, BUTTON_SIZE));
 			this.buttons.add(button);
 		}
 		case Left, Right -> {
 			button.setBounds(
 					new Rectangle(containerBounds.x() + CONTAINER_BUTTON_MARGIN,
 							containerBounds.y() + CONTAINER_BUTTON_MARGIN
-									+ buttons.size() * (2 * CONTAINER_BUTTON_MARGIN + buttonSize),
-							buttonSize, buttonSize));
+									+ buttons.size() * (2 * CONTAINER_BUTTON_MARGIN + BUTTON_SIZE),
+							BUTTON_SIZE, BUTTON_SIZE));
 			this.buttons.add(button);
 		}
 		default -> throw new IllegalArgumentException();
