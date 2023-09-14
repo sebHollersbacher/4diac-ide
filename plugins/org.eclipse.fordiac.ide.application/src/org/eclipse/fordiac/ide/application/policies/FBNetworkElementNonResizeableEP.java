@@ -19,7 +19,6 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedMoveHandle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedNonResizeableEditPolicy;
 import org.eclipse.fordiac.ide.gef.widgets.ContextButton;
@@ -27,7 +26,6 @@ import org.eclipse.fordiac.ide.gef.widgets.ContextButtonContainer;
 import org.eclipse.fordiac.ide.gef.widgets.ContextButtonContainer.Pos;
 import org.eclipse.fordiac.ide.gef.widgets.IContextButtonProvider;
 import org.eclipse.gef.GraphicalEditPart;
-import org.eclipse.gef.requests.ChangeBoundsRequest;
 
 public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPolicy {
 
@@ -45,7 +43,9 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		if (provider != null) {
 			createContextButtonMenu(provider);
 		}
+
 		performContainerAction((container, l) -> l.add(container), list);
+		performContainerAction((container, figure) -> figure.addFigureListener(container), getHostFigure());
 
 		removeSelectionFeedbackFigure();
 		return list;
@@ -89,24 +89,9 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 	}
 
 	@Override
-	protected IFigure createDragSourceFeedbackFigure() {
-		performContainerAction(ContextButtonContainer::setVisible, Boolean.FALSE);
-		return super.createDragSourceFeedbackFigure();
-	}
-
-	@Override
-	protected void eraseChangeBoundsFeedback(final ChangeBoundsRequest request) {
-		final Rectangle dragFigureBounds = getDragSourceFeedbackFigure().getBounds();
-
-		performContainerAction(ContextButtonContainer::setVisible, Boolean.TRUE);
-		performContainerAction(ContextButtonContainer::updateBounds, dragFigureBounds);
-
-		super.eraseChangeBoundsFeedback(request);
-	}
-
-	@Override
 	protected void removeSelectionHandles() {
 		super.removeSelectionHandles();
+		performContainerAction((container, figure) -> figure.removeFigureListener(container), getHostFigure());
 		topContainer = null;
 		rightContainer = null;
 		bottomContainer = null;

@@ -16,12 +16,14 @@ package org.eclipse.fordiac.ide.gef.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedMoveHandle;
 
-public class ContextButtonContainer extends Shape {
+public class ContextButtonContainer extends Shape implements FigureListener {
 
 	public enum Pos {
 		Top, Bottom, Left, Right
@@ -118,5 +120,10 @@ public class ContextButtonContainer extends Shape {
 		}
 		default -> throw new IllegalArgumentException();
 		}
+	}
+
+	@Override
+	public void figureMoved(final IFigure source) {
+		updateBounds(source.getBounds());
 	}
 }
