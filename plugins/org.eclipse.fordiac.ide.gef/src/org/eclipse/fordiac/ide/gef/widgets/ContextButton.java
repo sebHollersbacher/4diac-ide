@@ -17,11 +17,11 @@ import org.eclipse.draw2d.ActionEvent;
 import org.eclipse.draw2d.ActionListener;
 import org.eclipse.draw2d.Clickable;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedMoveHandle;
-import org.eclipse.fordiac.ide.ui.imageprovider.FordiacImage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
@@ -33,19 +33,16 @@ public class ContextButton extends Clickable implements ActionListener {
 	private final String command;
 	final IHandlerService handlerService;
 	final ICommandImageService imageService;
-	private final Image image;
 	private boolean hover = false;
+	private final ImageDescriptor imgDescriptor;
 
 	public ContextButton(final String command) {
 		imageService = PlatformUI.getWorkbench().getService(ICommandImageService.class);
 		handlerService = PlatformUI.getWorkbench().getService(IHandlerService.class);
+		
 		this.command = command;
-		final ImageDescriptor imgDescriptor = imageService.getImageDescriptor(command);
-		if (imgDescriptor != null) {
-			this.image = imgDescriptor.createImage();
-		} else {
-			this.image = FordiacImage.MISSING.getImage();
-		}
+		this.imgDescriptor = imageService.getImageDescriptor(command);
+		setToolTip(new Label(command));
 
 		addActionListener(this);
 		addMouseMotionListener(new MouseMotionListener.Stub() {
@@ -60,7 +57,6 @@ public class ContextButton extends Clickable implements ActionListener {
 				hover = false;
 				repaint();
 			}
-
 		});
 	}
 
@@ -76,19 +72,22 @@ public class ContextButton extends Clickable implements ActionListener {
 	@Override
 	protected void paintFigure(final Graphics graphics) {
 		if (hover) {
-			graphics.setAlpha(ModifiedMoveHandle.SELECTION_FILL_ALPHA);
+			graphics.setAlpha(2 * ModifiedMoveHandle.SELECTION_FILL_ALPHA);
 		} else {
-			graphics.setAlpha(20);
+			graphics.setAlpha(ModifiedMoveHandle.SELECTION_FILL_ALPHA);
 		}
 		graphics.setBackgroundColor(ModifiedMoveHandle.getSelectionColor());
 		graphics.fillRoundRectangle(getBounds(), 4, 4);
-
-		graphics.setAlpha(255);
-		final org.eclipse.swt.graphics.Rectangle rect = image.getBounds();
-		final Rectangle newRect = new Rectangle(0, 0, rect.width, rect.height);
-		newRect.x = getBounds().x + ((getBounds().width - newRect.width) / 2);
-		newRect.y = getBounds().y + ((getBounds().height - newRect.height) / 2);
-		graphics.drawImage(image, rect.x, rect.y, rect.width, rect.height, newRect.x, newRect.y, newRect.width,
-				newRect.height);
+		if (imgDescriptor != null) {
+			final Image image = imgDescriptor.createImage();
+			graphics.setAlpha(255);
+			final org.eclipse.swt.graphics.Rectangle rect = image.getBounds();
+			final Rectangle newRect = new Rectangle(0, 0, rect.width, rect.height);
+			newRect.x = getBounds().x + ((getBounds().width - newRect.width) / 2);
+			newRect.y = getBounds().y + ((getBounds().height - newRect.height) / 2);
+			graphics.drawImage(image, rect.x, rect.y, rect.width, rect.height, newRect.x, newRect.y, newRect.width,
+					newRect.height);
+			image.dispose();
+		}
 	}
 }

@@ -41,6 +41,10 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		final List<IFigure> list = new ArrayList<>();
 		list.add(new ModifiedMoveHandle((GraphicalEditPart) getHost(), insets, arc));
 
+		final IContextButtonProvider provider = getHost().getAdapter(IContextButtonProvider.class);
+		if (provider != null) {
+			createContextButtonMenu(provider);
+		}
 		performContainerAction((container, l) -> l.add(container), list);
 
 		removeSelectionFeedbackFigure();
@@ -49,11 +53,6 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 
 	@Override
 	protected RoundedRectangle createSelectionFeedbackFigure() {
-		final IContextButtonProvider provider = getHost().getAdapter(IContextButtonProvider.class);
-		if (provider != null) {
-			createContextButtonMenu(provider);
-		}
-
 		final RoundedRectangle figure = super.createSelectionFeedbackFigure();
 		figure.setFill(false);
 		figure.setOutline(true);
@@ -103,6 +102,15 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		performContainerAction(ContextButtonContainer::updateBounds, dragFigureBounds);
 
 		super.eraseChangeBoundsFeedback(request);
+	}
+
+	@Override
+	protected void removeSelectionHandles() {
+		super.removeSelectionHandles();
+		topContainer = null;
+		rightContainer = null;
+		bottomContainer = null;
+		leftContainer = null;
 	}
 
 	private <T> void performContainerAction(final BiConsumer<ContextButtonContainer, T> function, final T value) {
