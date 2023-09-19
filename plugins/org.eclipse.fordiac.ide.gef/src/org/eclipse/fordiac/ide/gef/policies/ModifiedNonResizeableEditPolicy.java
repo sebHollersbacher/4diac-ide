@@ -72,7 +72,7 @@ public class ModifiedNonResizeableEditPolicy extends NonResizableEditPolicy {
 		return list;
 	}
 
-	private RoundedRectangle selectionFeedback;
+	protected RoundedRectangle selectionFeedback;
 
 	@Override
 	public void showTargetFeedback(final Request request) {

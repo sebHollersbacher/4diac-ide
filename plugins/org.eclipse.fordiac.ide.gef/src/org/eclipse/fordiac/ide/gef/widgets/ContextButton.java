@@ -22,6 +22,7 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedMoveHandle;
+import org.eclipse.gef.EditPart;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
@@ -35,14 +36,16 @@ public class ContextButton extends Clickable implements ActionListener {
 	final ICommandImageService imageService;
 	private boolean hover = false;
 	private final ImageDescriptor imgDescriptor;
+	private final EditPart editPart;
 
-	public ContextButton(final String command) {
+	public ContextButton(final String command, final EditPart editpart) {
 		imageService = PlatformUI.getWorkbench().getService(ICommandImageService.class);
 		handlerService = PlatformUI.getWorkbench().getService(IHandlerService.class);
-		
+
 		this.command = command;
 		this.imgDescriptor = imageService.getImageDescriptor(command);
 		setToolTip(new Label(command));
+		this.editPart = editpart;
 
 		addActionListener(this);
 		addMouseMotionListener(new MouseMotionListener.Stub() {
@@ -63,7 +66,9 @@ public class ContextButton extends Clickable implements ActionListener {
 	@Override
 	public void actionPerformed(final ActionEvent event) {
 		try {
+//			editPart.getViewer().select(editPart);
 			handlerService.executeCommand(command, null);
+//			editPart.getViewer().deselect(editPart);
 		} catch (final Exception ex) {
 			// invalid command
 		}
