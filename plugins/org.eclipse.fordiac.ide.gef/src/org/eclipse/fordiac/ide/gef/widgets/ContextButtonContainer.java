@@ -34,10 +34,13 @@ public class ContextButtonContainer extends Shape implements FigureListener {
 	private final Pos position;
 	private final Rectangle drawRectangle = new Rectangle();
 
+	private Rectangle curEditPartBounds;
+
 	private final List<ContextButton> buttons = new ArrayList<>();
 
 	public ContextButtonContainer(final Rectangle editPartBounds, final Pos position) {
 		this.position = position;
+		this.curEditPartBounds = editPartBounds.getCopy();
 		initContainer(editPartBounds);
 	}
 
@@ -84,7 +87,45 @@ public class ContextButtonContainer extends Shape implements FigureListener {
 		}
 	}
 
-	public void updateBounds(final Rectangle editPartBounds) {
+	private void updateContainer(final Rectangle editPartBounds) {
+		final int xChanged = curEditPartBounds.x() - editPartBounds.x();
+		final int yChanged = curEditPartBounds.y() - editPartBounds.y();
+		final int widthChanged = curEditPartBounds.width() - editPartBounds.width();
+		final int heightChanged = curEditPartBounds.height() - editPartBounds.height();
+		this.curEditPartBounds = editPartBounds.getCopy();
+
+		final Rectangle containerBounds = this.getBounds();
+
+		switch (position) {
+		case Top -> this.setBounds(new Rectangle(containerBounds.x() - xChanged, containerBounds.y() - yChanged,
+				containerBounds.width() - widthChanged, containerBounds.height()));
+		case Right -> this.setBounds(new Rectangle(containerBounds.x() - xChanged - widthChanged,
+				containerBounds.y() - yChanged, containerBounds.width(), containerBounds.height() - heightChanged));
+		case Bottom ->
+			this.setBounds(new Rectangle(containerBounds.x() - xChanged, containerBounds.y() - yChanged - heightChanged,
+					containerBounds.width() - widthChanged, containerBounds.height()));
+		case Left -> this.setBounds(new Rectangle(containerBounds.x() - xChanged, containerBounds.y() - yChanged,
+				containerBounds.width(), containerBounds.height() - heightChanged));
+		default -> throw new IllegalArgumentException();
+		}
+		updateButtons(widthChanged, heightChanged);
+		updateDrawRectangle(editPartBounds);
+	}
+
+	public void updateButtons(final int widthChange, final int heightChange) {
+		if (position == Pos.Top) {
+			for (final ContextButton contextButton : buttons) {
+				contextButton.getBounds().setX(contextButton.getBounds().x() - widthChange);
+			}
+		}
+		if (position == Pos.Left) {
+			for (final ContextButton contextButton : buttons) {
+				contextButton.getBounds().setY(contextButton.getBounds().y() - heightChange);
+			}
+		}
+	}
+
+	public void updateDrawRectangle(final Rectangle editPartBounds) {
 		final int buttonSize = BUTTON_SIZE + 2 * CONTAINER_BUTTON_MARGIN;
 		switch (position) {
 		case Top -> drawRectangle.setBounds(new Rectangle(
@@ -128,7 +169,7 @@ public class ContextButtonContainer extends Shape implements FigureListener {
 		switch (position) {
 		case Top -> {
 			button.setBounds(new Rectangle(
-					getBounds().x() + drawRectangle.width() + CONTAINER_BUTTON_MARGIN
+					getBounds().x() + getBounds().width() - 2 * BUTTON_SIZE - CONTAINER_BUTTON_MARGIN
 							- buttons.size() * (2 * CONTAINER_BUTTON_MARGIN + BUTTON_SIZE),
 					getBounds().y() + CONTAINER_BUTTON_MARGIN, BUTTON_SIZE, BUTTON_SIZE));
 			this.buttons.add(button);
@@ -149,7 +190,7 @@ public class ContextButtonContainer extends Shape implements FigureListener {
 		case Left -> {
 			button.setBounds(
 					new Rectangle(getBounds().x() + CONTAINER_BUTTON_MARGIN,
-							getBounds().y() + drawRectangle.height()
+							getBounds().y() + getBounds().height() - 2 * (BUTTON_SIZE + CONTAINER_BUTTON_MARGIN)
 									- buttons.size() * (2 * CONTAINER_BUTTON_MARGIN + BUTTON_SIZE),
 							BUTTON_SIZE, BUTTON_SIZE));
 			this.buttons.add(button);
@@ -160,6 +201,6 @@ public class ContextButtonContainer extends Shape implements FigureListener {
 
 	@Override
 	public void figureMoved(final IFigure source) {
-		updateBounds(source.getBounds());
+		updateContainer(source.getBounds());
 	}
 }

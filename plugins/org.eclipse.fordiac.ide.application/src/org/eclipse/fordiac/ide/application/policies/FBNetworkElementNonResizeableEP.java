@@ -49,9 +49,8 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		figure.setLineWidth(2 * ModifiedMoveHandle.SELECTION_BORDER_WIDTH);
 
 		oldEditPartBounds = getHostFigure().getBounds().getCopy();
-		// we have to expand the underlying figure for better behaviour when moving the
-		// mouse over the context buttons
-		getHostFigure().getBounds().expand(10, 10);
+		getHostFigure().getBounds().expand(10, 10); // we have to expand the underlying figure for better behaviour when
+													// moving the mouse over the context buttons
 		createContextButtonMenu(getHost().getAdapter(IContextButtonProvider.class), true);
 		setVisible(true);
 
@@ -94,7 +93,7 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 				container.addButton(button);
 			}
 
-			container.updateBounds(oldEditPartBounds);
+			container.updateDrawRectangle(oldEditPartBounds);
 			container.setFill(false);
 			container.setOutline(true);
 			if (isHover) {
@@ -165,6 +164,7 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 
 		createContextButtonMenu(getHost().getAdapter(IContextButtonProvider.class), false);
 		performContainerAction((container, l) -> l.add(container), list);
+		performContainerAction((container, figure) -> figure.addFigureListener(container), getHostFigure());
 
 		return list;
 	}
