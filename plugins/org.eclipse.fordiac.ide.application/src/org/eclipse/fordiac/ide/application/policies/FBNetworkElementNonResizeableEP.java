@@ -38,8 +38,36 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 	private ContextButtonContainer bottomContainer;
 	private ContextButtonContainer leftContainer;
 
-	private Rectangle oldEditPartBounds = null;
+	private Rectangle realEditPartBounds = null;
 	private boolean hasEnteredContainer = false;
+
+	@Override
+	protected List<? extends IFigure> createSelectionHandles() {
+		final List<IFigure> list = new ArrayList<>();
+		list.add(new ModifiedMoveHandle((GraphicalEditPart) getHost(), insets, arc));
+		removeSelectionFeedbackFigure();
+
+		createContextButtonMenu(getHost().getAdapter(IContextButtonProvider.class), false);
+		performContainerAction((container, l) -> l.add(container), list);
+		performContainerAction((container, figure) -> figure.addFigureListener(container), getHostFigure());
+
+		return list;
+	}
+
+	@Override
+	protected void removeSelectionHandles() {
+		super.removeSelectionHandles();
+		performContainerAction((container, figure) -> figure.removeFigureListener(container), getHostFigure());
+		performContainerAction((container, layer) -> {
+			if (layer.getChildren().contains(container)) {
+				layer.remove(container);
+			}
+		}, getLayer(LayerConstants.HANDLE_LAYER));
+		topContainer = null;
+		rightContainer = null;
+		bottomContainer = null;
+		leftContainer = null;
+	}
 
 	@Override
 	protected RoundedRectangle createSelectionFeedbackFigure() {
@@ -48,7 +76,7 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		figure.setOutline(true);
 		figure.setLineWidth(2 * ModifiedMoveHandle.SELECTION_BORDER_WIDTH);
 
-		oldEditPartBounds = getHostFigure().getBounds().getCopy();
+		realEditPartBounds = getHostFigure().getBounds().getCopy();
 		getHostFigure().getBounds().expand(10, 10); // we have to expand the underlying figure for better behaviour when
 													// moving the mouse over the context buttons
 		createContextButtonMenu(getHost().getAdapter(IContextButtonProvider.class), true);
@@ -69,22 +97,22 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 
 	private void createContextButtonMenu(final IContextButtonProvider provider, final boolean isHover) {
 		if (topContainer == null) {
-			createContainer(provider.topCommandIDs(), Pos.Top, isHover);
+			createContainer(provider.topCommandIDs(), Pos.TOP, isHover);
 		}
 		if (rightContainer == null) {
-			createContainer(provider.rightCommandIDs(), Pos.Right, isHover);
+			createContainer(provider.rightCommandIDs(), Pos.RIGHT, isHover);
 		}
 		if (bottomContainer == null) {
-			createContainer(provider.bottomCommandIDs(), Pos.Bottom, isHover);
+			createContainer(provider.bottomCommandIDs(), Pos.BOTTOM, isHover);
 		}
 		if (leftContainer == null) {
-			createContainer(provider.leftCommandIDs(), Pos.Left, isHover);
+			createContainer(provider.leftCommandIDs(), Pos.LEFT, isHover);
 		}
 	}
 
 	private void createContainer(final List<String> commands, final Pos position, final boolean isHover) {
 		if (!commands.isEmpty()) {
-			final ContextButtonContainer container = new ContextButtonContainer(oldEditPartBounds, position);
+			final ContextButtonContainer container = new ContextButtonContainer(realEditPartBounds, position);
 			for (final String cmd : commands) {
 				final ContextButton button = new ContextButton(cmd, getHost());
 				if (isHover) {
@@ -93,7 +121,6 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 				container.addButton(button);
 			}
 
-			container.updateDrawRectangle(oldEditPartBounds);
 			container.setFill(false);
 			container.setOutline(true);
 			if (isHover) {
@@ -101,10 +128,10 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 			}
 
 			switch (position) {
-			case Top -> topContainer = container;
-			case Right -> rightContainer = container;
-			case Bottom -> bottomContainer = container;
-			case Left -> leftContainer = container;
+			case TOP -> topContainer = container;
+			case RIGHT -> rightContainer = container;
+			case BOTTOM -> bottomContainer = container;
+			case LEFT -> leftContainer = container;
 			default -> throw new IllegalArgumentException();
 			}
 		}
@@ -154,33 +181,5 @@ public class FBNetworkElementNonResizeableEP extends ModifiedNonResizeableEditPo
 		if (leftContainer != null) {
 			function.accept(leftContainer, value);
 		}
-	}
-
-	@Override
-	protected List<? extends IFigure> createSelectionHandles() {
-		final List<IFigure> list = new ArrayList<>();
-		list.add(new ModifiedMoveHandle((GraphicalEditPart) getHost(), insets, arc));
-		removeSelectionFeedbackFigure();
-
-		createContextButtonMenu(getHost().getAdapter(IContextButtonProvider.class), false);
-		performContainerAction((container, l) -> l.add(container), list);
-		performContainerAction((container, figure) -> figure.addFigureListener(container), getHostFigure());
-
-		return list;
-	}
-
-	@Override
-	protected void removeSelectionHandles() {
-		super.removeSelectionHandles();
-		performContainerAction((container, figure) -> figure.removeFigureListener(container), getHostFigure());
-		performContainerAction((container, layer) -> {
-			if (layer.getChildren().contains(container)) {
-				layer.remove(container);
-			}
-		}, getLayer(LayerConstants.HANDLE_LAYER));
-		topContainer = null;
-		rightContainer = null;
-		bottomContainer = null;
-		leftContainer = null;
 	}
 }
