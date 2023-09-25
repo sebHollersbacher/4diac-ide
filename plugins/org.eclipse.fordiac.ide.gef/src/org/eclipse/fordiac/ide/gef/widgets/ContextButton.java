@@ -22,6 +22,7 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.fordiac.ide.gef.policies.ModifiedMoveHandle;
+import org.eclipse.fordiac.ide.ui.imageprovider.FordiacImage;
 import org.eclipse.gef.EditPart;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
@@ -35,7 +36,7 @@ public class ContextButton extends Clickable implements ActionListener {
 	final IHandlerService handlerService;
 	final ICommandImageService imageService;
 	private boolean hover = false;
-	private final ImageDescriptor imgDescriptor;
+	private ImageDescriptor imgDescriptor;
 	private final EditPart editPart;
 
 	public ContextButton(final String command, final EditPart editpart) {
@@ -44,6 +45,9 @@ public class ContextButton extends Clickable implements ActionListener {
 
 		this.command = command;
 		this.imgDescriptor = imageService.getImageDescriptor(command);
+		if (this.imgDescriptor == null) {
+			this.imgDescriptor = FordiacImage.MISSING.getImageDescriptor();
+		}
 		setToolTip(new Label(command));
 		this.editPart = editpart;
 
