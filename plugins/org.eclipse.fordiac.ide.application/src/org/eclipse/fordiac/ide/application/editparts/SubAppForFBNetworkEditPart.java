@@ -26,6 +26,7 @@
  *******************************************************************************/
 package org.eclipse.fordiac.ide.application.editparts;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.draw2d.GridData;
@@ -47,6 +48,7 @@ import org.eclipse.fordiac.ide.gef.editparts.InterfaceEditPart;
 import org.eclipse.fordiac.ide.gef.editparts.TextDirectEditManager;
 import org.eclipse.fordiac.ide.gef.policies.AbstractViewRenameEditPolicy;
 import org.eclipse.fordiac.ide.gef.policies.EmptyXYLayoutEditPolicy;
+import org.eclipse.fordiac.ide.gef.widgets.IContextButtonProvider;
 import org.eclipse.fordiac.ide.model.CoordinateConverter;
 import org.eclipse.fordiac.ide.model.commands.change.ChangeCommentCommand;
 import org.eclipse.fordiac.ide.model.libraryElement.FBNetwork;
@@ -395,6 +397,31 @@ public class SubAppForFBNetworkEditPart extends AbstractFBNElementEditPart imple
 	public <T> T getAdapter(final Class<T> key) {
 		if (key == SubApp.class) {
 			return key.cast(getModel());
+		}
+		if (key == IContextButtonProvider.class) {
+			return key.cast(new IContextButtonProvider() {
+				@Override
+				public List<String> topCommandIDs() {
+					return Arrays.asList("org.eclipse.ui.edit.delete",
+							"org.eclipse.fordiac.ide.application.commands.convertToGroup");
+				}
+
+				@Override
+				public List<String> rightCommandIDs() {
+					return Arrays.asList("org.eclipse.fordiac.ide.application.commands.gotochild",
+							"org.eclipse.fordiac.ide.application.commands.expandSubApp");
+				}
+
+				@Override
+				public List<String> bottomCommandIDs() {
+					return List.of();
+				}
+
+				@Override
+				public List<String> leftCommandIDs() {
+					return List.of();
+				}
+			});
 		}
 		return super.getAdapter(key);
 	}
