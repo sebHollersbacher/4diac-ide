@@ -13,6 +13,7 @@
 
 package org.eclipse.fordiac.ide.gef.widgets;
 
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.draw2d.ActionEvent;
 import org.eclipse.draw2d.ActionListener;
 import org.eclipse.draw2d.Clickable;
@@ -28,6 +29,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandImageService;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 
 public class ContextButton extends Clickable implements ActionListener {
@@ -43,12 +45,18 @@ public class ContextButton extends Clickable implements ActionListener {
 		imageService = PlatformUI.getWorkbench().getService(ICommandImageService.class);
 		handlerService = PlatformUI.getWorkbench().getService(IHandlerService.class);
 
+		try {
+			setToolTip(new Label(
+					PlatformUI.getWorkbench().getService(ICommandService.class).getCommand(command).getName()));
+		} catch (final NotDefinedException e) {
+			// no toolTip
+		}
+
 		this.command = command;
 		this.imgDescriptor = imageService.getImageDescriptor(command);
 		if (this.imgDescriptor == null) {
 			this.imgDescriptor = FordiacImage.MISSING.getImageDescriptor();
 		}
-		setToolTip(new Label(command));
 		this.editPart = editpart;
 
 		addActionListener(this);
@@ -69,11 +77,11 @@ public class ContextButton extends Clickable implements ActionListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent event) {
+		editPart.getViewer().select(editPart);
 		try {
 //			editPart.getViewer().select(editPart);
 			handlerService.executeCommand(command, null);
-//			editPart.getViewer().deselect(editPart);
-		} catch (final Exception ex) {
+		} catch (final Exception exception) {
 			// invalid command
 		}
 	}

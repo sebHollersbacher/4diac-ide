@@ -71,21 +71,20 @@ public class FBEditPart extends AbstractFBNElementEditPart {
 			return key.cast(new IContextButtonProvider() {
 				@Override
 				public List<String> topCommandIDs() {
-					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoom100", "org.eclipse.fordiac.ide.gef.zoom100",
+					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoomfitpage", "invalid",
 							"org.eclipse.fordiac.ide.gef.zoom100");
 				}
 
 				@Override
 				public List<String> rightCommandIDs() {
-					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoomfitpage",
-							"org.eclipse.fordiac.ide.application.commands.updateFBType",
-							"org.eclipse.fordiac.ide.gef.zoomfitpage",
-							"org.eclipse.fordiac.ide.application.commands.openType");
+					return Arrays.asList("org.eclipse.fordiac.ide.application.commands.updateFBType",
+							"org.eclipse.fordiac.ide.application.commands.toggleConnections",
+							"org.eclipse.ui.edit.delete");
 				}
 
 				@Override
 				public List<String> leftCommandIDs() {
-					return Arrays.asList("org.eclipse.fordiac.ide.gef.zoom100", "invalid");
+					return Arrays.asList(); // "org.eclipse.fordiac.ide.gef.zoom100", "");
 				}
 
 				@Override
