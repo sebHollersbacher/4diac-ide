@@ -14,15 +14,25 @@
 
 package org.eclipse.fordiac.ide.application.handlers;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.fordiac.ide.gef.editparts.InterfaceEditPart;
+import org.eclipse.fordiac.ide.model.data.StructuredType;
 import org.eclipse.fordiac.ide.model.libraryElement.Connection;
+import org.eclipse.fordiac.ide.model.libraryElement.FBNetworkElement;
 import org.eclipse.fordiac.ide.model.libraryElement.IInterfaceElement;
+import org.eclipse.fordiac.ide.model.libraryElement.MemberVarDeclaration;
+import org.eclipse.fordiac.ide.model.libraryElement.StructManipulator;
+import org.eclipse.fordiac.ide.model.libraryElement.SubApp;
 import org.eclipse.fordiac.ide.model.ui.editors.HandlerHelper;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -41,6 +51,26 @@ public class FollowRightConnectionHandler extends FollowConnectionHandler {
 		final IInterfaceElement originPin = ((InterfaceEditPart) ((IStructuredSelection) selection).getFirstElement())
 				.getModel();
 
+		if (originPin instanceof MemberVarDeclaration && originPin.isIsInput()) {
+			final IInterfaceElement oppositePin = getInternalOppositePin(selection);
+			if (oppositePin.getType() instanceof final StructuredType struct) {
+				final List<FBNetworkElement> list = getStructOpposites(struct, oppositePin);
+
+				final List<IInterfaceElement> interf = list.stream()
+						.map(mux -> mux.getInterfaceElement(originPin.getName())).toList();
+
+				if (interf.size() == 1) {
+					// TODO use correct viewer
+					HandlerHelper.selectElement(interf.getFirst(), viewer);
+					return Status.OK_STATUS;
+				}
+				if (interf.size() > 1) {
+					showOppositeSelectionDialog(interf, event, viewer, originPin, editor);
+					return Status.OK_STATUS;
+				}
+			}
+		}
+
 		final InterfaceEditPart interfaceEditPart = (InterfaceEditPart) ((IStructuredSelection) selection)
 				.getFirstElement();
 		if (isEditorBorderPin(interfaceEditPart.getModel(), getFBNetwork(editor))
@@ -58,6 +88,39 @@ public class FollowRightConnectionHandler extends FollowConnectionHandler {
 		final List<IInterfaceElement> resolvedOpposites = resolveTargetPins(opposites, viewer);
 		selectOpposites(event, viewer, originPin, resolvedOpposites, editor);
 		return Status.OK_STATUS;
+	}
+
+	private static List<FBNetworkElement> getStructOpposites(final StructuredType struct,
+			final IInterfaceElement oppositePin) {
+
+		final List<FBNetworkElement> list = new ArrayList<>();
+		final Deque<IInterfaceElement> queue = new ArrayDeque<>();
+		queue.add(oppositePin);
+
+		while (!queue.isEmpty()) {
+			final IInterfaceElement currentPin = queue.pop();
+			for (final Connection conn : currentPin.getOutputConnections()) {
+//				while(!conn.getDestination().isIsInput())
+				if (conn.getDestination().getFBNetworkElement() instanceof final StructManipulator structManipulator) {
+					if (structManipulator.getDataType() == struct) {
+						list.add(structManipulator);
+					}
+
+					structManipulator.getInterface().getOutputs()
+							.filter(Predicate.not(StructuredType.class::isInstance)).forEach(queue::add);
+				} else if (conn.getDestination().getFBNetworkElement() instanceof SubApp) {
+					conn.getDestination().getOutputConnections().stream()
+							.map((Function<? super Connection, ? extends IInterfaceElement>) Connection::getDestination)
+							.filter(Predicate.not(StructuredType.class::isInstance)).forEach(queue::add);
+				}
+//				else if (conn.getDestination().getFBNetworkElement() instanceof final SubApp subApp) {
+//					subApp.getInterface().getOutputs().filter(Predicate.not(StructuredType.class::isInstance))
+//							.forEach(queue::add);
+//				}
+			}
+		}
+
+		return list;
 	}
 
 	@Override

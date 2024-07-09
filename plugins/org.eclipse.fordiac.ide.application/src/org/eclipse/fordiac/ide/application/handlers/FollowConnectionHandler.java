@@ -132,8 +132,9 @@ public abstract class FollowConnectionHandler extends AbstractHandler {
 				&& (!fbNetwork.equals(fbnElement.eContainer()));
 	}
 
-	private static void showOppositeSelectionDialog(final List<IInterfaceElement> opposites, final ExecutionEvent event,
-			final GraphicalViewer viewer, final IInterfaceElement originPin, final IEditorPart editor) {
+	protected static void showOppositeSelectionDialog(final List<IInterfaceElement> opposites,
+			final ExecutionEvent event, final GraphicalViewer viewer, final IInterfaceElement originPin,
+			final IEditorPart editor) {
 		selectInterfaceElement(opposites.getFirst(), editor);
 		viewer.flush();
 		final StructuredSelection selection = (StructuredSelection) HandlerUtil.getCurrentSelection(event);
