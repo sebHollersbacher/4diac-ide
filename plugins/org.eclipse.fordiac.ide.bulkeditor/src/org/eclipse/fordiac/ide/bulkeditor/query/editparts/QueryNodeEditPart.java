@@ -30,6 +30,7 @@ import org.eclipse.fordiac.ide.bulkeditor.query.figures.QueryPlaceNodeFigure;
 import org.eclipse.fordiac.ide.bulkeditor.query.figures.QueryPlaceholderNodeFigure;
 import org.eclipse.fordiac.ide.bulkeditor.query.policies.DeleteQueryNodeEditPolicy;
 import org.eclipse.fordiac.ide.bulkeditor.query.policies.QueryDirectEditPolicy;
+import org.eclipse.fordiac.ide.gef.policies.ModifiedNonResizeableEditPolicy;
 import org.eclipse.fordiac.ide.model.typelibrary.TypeLibraryManager;
 import org.eclipse.fordiac.ide.model.ui.widgets.AttributeSelectionContentProvider;
 import org.eclipse.fordiac.ide.model.ui.widgets.TypeSelectionProposalProvider;
@@ -89,6 +90,9 @@ public class QueryNodeEditPart extends AbstractGraphicalEditPart implements Node
 
 	@Override
 	protected void createEditPolicies() {
+		final ModifiedNonResizeableEditPolicy selectionPolicy = new ModifiedNonResizeableEditPolicy();
+		selectionPolicy.setDragAllowed(false);
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, selectionPolicy);
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new DeleteQueryNodeEditPolicy());
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, new QueryDirectEditPolicy());
 	}
