@@ -12,6 +12,10 @@
  *******************************************************************************/
 package org.eclipse.fordiac.ide.bulkeditor.query.figures;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.GridLayout;
@@ -20,20 +24,39 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.fordiac.ide.bulkeditor.QueryUIPreferenceConstants;
 import org.eclipse.fordiac.ide.bulkeditor.query.QueryModelHelper;
+import org.eclipse.fordiac.ide.bulkeditor.query.QueryModelHelper.FieldConstraintEntry;
 import org.eclipse.swt.graphics.Color;
 
 public class QueryConstraintNodeFigure extends QueryNodeFigure {
 
 	private static final Color NEGATED_COLOR_HEADER_BG = QueryUIPreferenceConstants.getNegatedHeaderBackgroundColor();
 	private final FigureCanvas canvas;
+	private final Figure body;
+	private final Map<EObject, FieldConstraintFigure> filters = new LinkedHashMap<>();
 
 	public QueryConstraintNodeFigure(final EObject element, final FigureCanvas canvas) {
 		super(element);
 		this.canvas = canvas;
-		add(createFieldConstraintBody(element));
+		body = createFieldConstraintBody();
+		add(body);
 	}
 
-	private Figure createFieldConstraintBody(final EObject constraint) {
+	@Override
+	public void refresh() {
+		super.refresh();
+		final List<FieldConstraintEntry> entries = QueryModelHelper.getContainedFieldConstraints(getElement());
+		if (entries.stream().map(FieldConstraintEntry::fieldConstraint).toList()
+				.equals(List.copyOf(filters.keySet()))) {
+			filters.forEach((fc, filter) -> filter.setData(QueryModelHelper.readFieldConstraint(fc)));
+		} else {
+			body.removeAll();
+			filters.clear();
+			entries.forEach(
+					entry -> body.add(createFieldConstraintRow(entry.reference().getName(), entry.fieldConstraint())));
+		}
+	}
+
+	private static Figure createFieldConstraintBody() {
 		final Figure body = new Figure();
 		final ToolbarLayout bodyLayout = new ToolbarLayout(false);
 		bodyLayout.setStretchMinorAxis(true);
@@ -41,10 +64,6 @@ public class QueryConstraintNodeFigure extends QueryNodeFigure {
 		body.setLayoutManager(bodyLayout);
 		body.setBorder(new MarginBorder(2, 6, 4, 6));
 		body.setOpaque(true);
-
-		for (final var entry : QueryModelHelper.getContainedFieldConstraints(constraint)) {
-			body.add(createFieldConstraintRow(entry.reference().getName(), entry.fieldConstraint()));
-		}
 		return body;
 	}
 
@@ -58,6 +77,7 @@ public class QueryConstraintNodeFigure extends QueryNodeFigure {
 		final var filter = new FieldConstraintFigure(fieldName, QueryModelHelper.readFieldConstraint(fc), canvas);
 		filter.addFilterChangeListener(data -> QueryModelHelper.writeFieldConstraint(fc, data));
 		row.add(filter);
+		filters.put(fc, filter);
 		return row;
 	}
 

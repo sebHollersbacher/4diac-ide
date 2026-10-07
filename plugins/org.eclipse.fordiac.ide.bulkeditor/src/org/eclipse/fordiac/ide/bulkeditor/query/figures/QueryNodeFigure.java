@@ -31,15 +31,25 @@ public class QueryNodeFigure extends Figure {
 	private static final Font BOLD_FONT = QueryUIPreferenceConstants.getHeaderFont();
 
 	private final EObject element;
+	private final Figure header;
 
 	public QueryNodeFigure(final EObject element) {
 		this.element = element;
 		configureLayout();
-		add(createHeader(element));
+		header = createHeader(element);
+		add(header);
 	}
 
 	public EObject getElement() {
 		return element;
+	}
+
+	/** Updates the figure to the current state of its element. */
+	public void refresh() {
+		final Color color = getBackgroundColor();
+		header.setBackgroundColor(color);
+		((LineBorder) getBorder()).setColor(color);
+		repaint();
 	}
 
 	private void configureLayout() {

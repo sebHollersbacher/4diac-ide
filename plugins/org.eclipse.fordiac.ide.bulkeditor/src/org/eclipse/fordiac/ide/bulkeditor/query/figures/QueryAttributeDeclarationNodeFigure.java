@@ -24,7 +24,6 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.fordiac.ide.bulkeditor.QueryUIPreferenceConstants;
 import org.eclipse.fordiac.ide.bulkeditor.query.QueryModelHelper;
 import org.eclipse.fordiac.ide.model.typelibrary.TypeLibraryManager;
@@ -58,6 +57,13 @@ public class QueryAttributeDeclarationNodeFigure extends QueryNodeFigure {
 		add(createBody(element));
 	}
 
+	@Override
+	public void refresh() {
+		super.refresh();
+		valueLabel.setText(QueryModelHelper.getFeatureText(getElement(), QueryModelHelper.FEATURE_NAME));
+		resizeToFit();
+	}
+
 	private Figure createBody(final EObject element) {
 		final Figure body = new Figure();
 		final ToolbarLayout bodyLayout = new ToolbarLayout(false);
@@ -83,11 +89,7 @@ public class QueryAttributeDeclarationNodeFigure extends QueryNodeFigure {
 		row.add(nameLabel);
 		gl.setConstraint(nameLabel, new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
-		final EStructuralFeature feature = element.eClass().getEStructuralFeature(featureName);
-		final String initialValue = feature != null && element.eIsSet(feature) ? String.valueOf(element.eGet(feature))
-				: ""; //$NON-NLS-1$
-
-		this.valueLabel = new Label(initialValue);
+		this.valueLabel = new Label();
 		valueLabel.setOpaque(true);
 		valueLabel.setBackgroundColor(COLOR_VALUE_BG);
 		valueLabel.setBorder(new LineBorder(COLOR_VALUE_BORDER, 1));

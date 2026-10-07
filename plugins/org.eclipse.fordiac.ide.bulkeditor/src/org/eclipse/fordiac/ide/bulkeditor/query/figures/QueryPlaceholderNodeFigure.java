@@ -12,6 +12,9 @@
  *******************************************************************************/
 package org.eclipse.fordiac.ide.bulkeditor.query.figures;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.GridData;
@@ -23,7 +26,6 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.fordiac.ide.bulkeditor.QueryUIPreferenceConstants;
 import org.eclipse.fordiac.ide.bulkeditor.query.QueryModelHelper;
 import org.eclipse.swt.SWT;
@@ -36,11 +38,19 @@ public class QueryPlaceholderNodeFigure extends QueryNodeFigure {
 	private static final Color COLOR_VALUE_BORDER = QueryUIPreferenceConstants.getValueBorder();
 
 	private final FigureCanvas canvas;
+	private final Map<String, Label> valueLabels = new HashMap<>();
 
 	public QueryPlaceholderNodeFigure(final EObject element, final FigureCanvas canvas) {
 		super(element);
 		this.canvas = canvas;
 		add(createPlaceholderBody(element));
+	}
+
+	@Override
+	public void refresh() {
+		super.refresh();
+		valueLabels.forEach((featureName, valueLabel) -> valueLabel
+				.setText(QueryModelHelper.getFeatureText(getElement(), featureName)));
 	}
 
 	private Figure createPlaceholderBody(final EObject placeholder) {
@@ -69,12 +79,8 @@ public class QueryPlaceholderNodeFigure extends QueryNodeFigure {
 		row.add(nameLabel);
 		gl.setConstraint(nameLabel, new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
-		final EStructuralFeature feature = placeholder.eClass().getEStructuralFeature(featureName);
-		final String initialValue = feature != null && placeholder.eIsSet(feature)
-				? String.valueOf(placeholder.eGet(feature))
-				: ""; //$NON-NLS-1$
-
-		final Label valueLabel = new Label(initialValue);
+		final Label valueLabel = new Label();
+		valueLabels.put(featureName, valueLabel);
 		valueLabel.setOpaque(true);
 		valueLabel.setBackgroundColor(COLOR_VALUE_BG);
 		valueLabel.setBorder(new LineBorder(COLOR_VALUE_BORDER, 1));

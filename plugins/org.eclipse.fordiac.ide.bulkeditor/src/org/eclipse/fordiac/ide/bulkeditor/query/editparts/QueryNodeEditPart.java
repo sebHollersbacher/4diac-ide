@@ -50,6 +50,11 @@ public class QueryNodeEditPart extends AbstractGraphicalEditPart implements Node
 	}
 
 	@Override
+	public QueryNodeFigure getFigure() {
+		return (QueryNodeFigure) super.getFigure();
+	}
+
+	@Override
 	protected IFigure createFigure() {
 		final EObject element = getModel();
 		final FigureCanvas canvas = (FigureCanvas) getViewer().getControl();
@@ -71,6 +76,11 @@ public class QueryNodeEditPart extends AbstractGraphicalEditPart implements Node
 	@Override
 	protected void createEditPolicies() {
 		// the nodes are edited through their figures and the context menu of the viewer
+	}
+
+	@Override
+	protected void refreshVisuals() {
+		getFigure().refresh();
 	}
 
 	@Override

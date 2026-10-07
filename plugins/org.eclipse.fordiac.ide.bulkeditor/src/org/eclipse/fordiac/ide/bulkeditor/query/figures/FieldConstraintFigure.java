@@ -123,6 +123,15 @@ public class FieldConstraintFigure extends Figure {
 		listeners.remove(listener);
 	}
 
+	public void setData(final FieldConstraintData data) {
+		valueLabel.setText(data.value());
+		caseSensitive.setSelected(data.caseSensitive());
+		wholeWord.setSelected(data.wholeWord());
+		exactMatch.setSelected(data.entire());
+		regularExpression.setSelected(data.regex());
+		updateEnablement();
+	}
+
 	private void updateEnablement() {
 		wholeWord.setEnabled(!exactMatch.isSelected() && !regularExpression.isSelected());
 		exactMatch.setEnabled(!wholeWord.isSelected());

@@ -72,14 +72,8 @@ public final class QueryGraphicalViewer extends AdvancedScrollingGraphicalViewer
 		final EObject queryRoot = resource.getContents().isEmpty() ? null : resource.getContents().get(0);
 		if (diagram == null || diagram.getQueryRoot() != queryRoot) {
 			diagram = new QueryDiagram(queryRoot);
+			setContents(diagram);
 		}
-		setContents(diagram);
-	}
-
-	private void refresh() {
-		// the figures show the state of their elements at creation, therefore
-		// recreate all edit parts
-		setContents(diagram);
 	}
 
 	public void createContextMenu(final EPackage queryPackage, final Runnable onSave, final Runnable onLoad,
@@ -112,12 +106,11 @@ public final class QueryGraphicalViewer extends AdvancedScrollingGraphicalViewer
 			return;
 		}
 
-		final Runnable afterChange = this::refresh;
-		QueryModelHelper.populateNegateToggle(menu, selected, this::refresh);
+		QueryModelHelper.populateNegateToggle(menu, selected);
 		QueryModelHelper.populateAddChildMenuItems(menu, selected, editingDomain, queryPackage,
-				child -> isReferenceAddable(child) && isFieldReferenceAllowed(selected, child), afterChange);
-		QueryModelHelper.populateFieldConstraintRemoval(menu, selected, editingDomain, afterChange);
-		QueryModelHelper.populateRemoveMenuItem(menu, selected, editingDomain, afterChange);
+				child -> isReferenceAddable(child) && isFieldReferenceAllowed(selected, child));
+		QueryModelHelper.populateFieldConstraintRemoval(menu, selected, editingDomain);
+		QueryModelHelper.populateRemoveMenuItem(menu, selected, editingDomain);
 	}
 
 	private EObject getSelectedElement() {
