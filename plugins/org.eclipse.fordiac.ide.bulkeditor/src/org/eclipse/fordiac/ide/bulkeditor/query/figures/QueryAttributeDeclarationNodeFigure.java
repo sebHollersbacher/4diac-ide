@@ -10,7 +10,7 @@
  * Contributors:
  *   Sebastian Hollersbacher - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.fordiac.ide.bulkeditor.query;
+package org.eclipse.fordiac.ide.bulkeditor.query.figures;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.Figure;
@@ -26,6 +26,7 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.fordiac.ide.bulkeditor.QueryUIPreferenceConstants;
+import org.eclipse.fordiac.ide.bulkeditor.query.QueryModelHelper;
 import org.eclipse.fordiac.ide.model.typelibrary.TypeLibraryManager;
 import org.eclipse.fordiac.ide.model.ui.widgets.AttributeSelectionContentProvider;
 import org.eclipse.fordiac.ide.model.ui.widgets.TypeSelectionProposalProvider;
@@ -37,9 +38,6 @@ import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.zest.core.widgets.Graph;
-import org.eclipse.zest.core.widgets.GraphItem;
-import org.eclipse.zest.core.widgets.GraphNode;
 
 public class QueryAttributeDeclarationNodeFigure extends QueryNodeFigure {
 
@@ -96,9 +94,8 @@ public class QueryAttributeDeclarationNodeFigure extends QueryNodeFigure {
 		valueLabel.addMouseListener(new MouseListener.Stub() {
 			@Override
 			public void mouseDoubleClicked(final MouseEvent me) {
-				if (canvas instanceof final Graph graph) {
-					graph.setSelection(new GraphItem[0]);
-				}
+				// the double click shall not collapse the node
+				me.consume();
 				openDirectEdit(valueLabel, element);
 			}
 		});
@@ -163,18 +160,7 @@ public class QueryAttributeDeclarationNodeFigure extends QueryNodeFigure {
 	private void resizeToFit() {
 		valueGd.widthHint = computeValueWidth(valueLabel);
 		invalidateTree();
-		final var prefSize = getPreferredSize();
-		setSize(prefSize);
 		revalidate();
-
-		if (canvas instanceof final Graph graph) {
-			for (final Object obj : graph.getNodes()) {
-				if (obj instanceof final GraphNode gn && gn.getData() == getElement()) {
-					gn.setSize(prefSize.width, prefSize.height);
-					break;
-				}
-			}
-		}
 	}
 
 	private static int computeValueWidth(final Label label) {

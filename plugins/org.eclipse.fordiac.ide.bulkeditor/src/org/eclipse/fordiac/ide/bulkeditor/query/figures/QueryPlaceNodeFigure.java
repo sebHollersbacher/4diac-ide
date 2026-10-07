@@ -10,13 +10,14 @@
  * Contributors:
  *   Sebastian Hollersbacher - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.fordiac.ide.bulkeditor.query;
+package org.eclipse.fordiac.ide.bulkeditor.query.figures;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.fordiac.ide.bulkeditor.query.QueryModelHelper;
 
 public class QueryPlaceNodeFigure extends QueryNodeFigure {
 
@@ -40,7 +41,7 @@ public class QueryPlaceNodeFigure extends QueryNodeFigure {
 	}
 
 	private static Figure createOccurrenceToggle(final EObject instance, final EStructuralFeature feature) {
-		final var button = new ToggleButton(QueryModelHelper.FEATURE_IGNORE_LINKED_LIBRARIES);
+		final var button = new QueryToggleButton(QueryModelHelper.FEATURE_IGNORE_LINKED_LIBRARIES);
 		button.setSelected(Boolean.TRUE.equals(instance.eGet(feature)));
 		button.addActionListener(event -> QueryModelHelper.setIgnoreLinkedLibrary(instance, button.isSelected()));
 		return button;

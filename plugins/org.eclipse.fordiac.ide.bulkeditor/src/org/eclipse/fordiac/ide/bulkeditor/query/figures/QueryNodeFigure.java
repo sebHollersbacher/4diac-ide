@@ -10,7 +10,7 @@
  * Contributors:
  *   Sebastian Hollersbacher - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.fordiac.ide.bulkeditor.query;
+package org.eclipse.fordiac.ide.bulkeditor.query.figures;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.GridData;
@@ -40,10 +40,6 @@ public class QueryNodeFigure extends Figure {
 
 	public EObject getElement() {
 		return element;
-	}
-
-	public boolean isPlaceNode() {
-		return QueryModelHelper.isOfType(element, QueryModelHelper.PLACE);
 	}
 
 	private void configureLayout() {

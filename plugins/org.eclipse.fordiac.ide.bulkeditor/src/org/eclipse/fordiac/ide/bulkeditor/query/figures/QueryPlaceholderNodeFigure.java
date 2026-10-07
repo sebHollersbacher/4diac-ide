@@ -10,7 +10,7 @@
  * Contributors:
  *   Sebastian Hollersbacher - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.fordiac.ide.bulkeditor.query;
+package org.eclipse.fordiac.ide.bulkeditor.query.figures;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
@@ -25,11 +25,10 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.fordiac.ide.bulkeditor.QueryUIPreferenceConstants;
+import org.eclipse.fordiac.ide.bulkeditor.query.QueryModelHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.zest.core.widgets.Graph;
-import org.eclipse.zest.core.widgets.GraphItem;
 
 public class QueryPlaceholderNodeFigure extends QueryNodeFigure {
 
@@ -82,9 +81,8 @@ public class QueryPlaceholderNodeFigure extends QueryNodeFigure {
 		valueLabel.addMouseListener(new MouseListener.Stub() {
 			@Override
 			public void mouseDoubleClicked(final MouseEvent me) {
-				if (canvas instanceof final Graph graph) {
-					graph.setSelection(new GraphItem[0]);
-				}
+				// the double click shall not collapse the node
+				me.consume();
 				openDirectEdit(valueLabel, placeholder, featureName);
 			}
 		});
